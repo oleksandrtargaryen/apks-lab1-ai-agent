@@ -1,10 +1,10 @@
 # Build outputs
 build/
-build-*/
-cmake-build-*/
-out/
+/build-*/
+/cmake-build-*/
+/out/
 dist/
-Testing/
+/Testing/
 CMakeUserPresets.json
 
 # Caches
