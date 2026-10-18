@@ -214,5 +214,14 @@ CHECK: FAIL — 1 перевірку не пройдено: 6
 чіпав») і запропонував відновити файл користувачу. Після
 `git checkout -- tests/test_math.cpp` — знову `100% tests passed`.
 
-**GitHub Actions:** результати для ubuntu-latest, windows-latest,
-macos-latest — у pull request `lab1/finish` (посилання на запуск у описі PR).
+**GitHub Actions** — перший запуск на pull request `lab1/finish`
+([run 39147959628](https://github.com/oleksandrtargaryen/apks-lab1-ai-agent/actions/runs/39147959628),
+коміт `38b7999`), усі три ОС зелені з першої спроби:
+
+| Job | Результат | Ключові рядки логу | Артефакт |
+|-----|-----------|--------------------|----------|
+| `build-and-test (ubuntu-latest)` | success | `MathTest.BasicAddition ... Passed`, `100% tests passed`, `Hello, World!` | `hello-ubuntu-latest` |
+| `build-and-test (windows-latest)` | success | `MathTest.BasicAddition ... Passed`, `100% tests passed`, `Hello, World!` | `hello-windows-latest` (`hello.exe`) |
+| `build-and-test (macos-latest)` | success | `MathTest.BasicAddition ... Passed`, `100% tests passed`, `Hello, World!` | `hello-macos-latest` |
+
+Наступні запуски (після комітів документації) — у вкладці Checks pull request-а.
