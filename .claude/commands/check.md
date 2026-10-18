@@ -43,6 +43,8 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
    каталогу) і `description:`, а також розділи: `## Коли застосовувати`,
    `## Вхідні дані`, `## Результат`, `## Перевірка результату`,
    `## Приклад входу`, `## Очікуваний результат`, `## Типовий сценарій помилки`.
+   Grep по каталогу `.claude/skills` враховує `.gitignore` і може мовчки
+   пропустити проігнорований skill — перевіряй кожен `SKILL.md` окремим шляхом.
 
 4. **Commands.** Кожен з 6 файлів має `description:` у frontmatter і
    розділи `## Передумови`, `## Дії`, `## Команди перевірки`,
@@ -90,7 +92,18 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
    - `git check-ignore -q build/` і `git check-ignore -q dist/` — успішні;
    - `git ls-files build dist .cache` — порожньо;
    - `git ls-files -- '.env*' '*/.env*' '*.pem' '*.key'` — порожньо
-     (pathspec замість `git ls-files | grep`).
+     (pathspec замість `git ls-files | grep`);
+   - **файли агента не ігноруються:**
+     `git check-ignore -v --no-index .claude/skills/build-and-test/SKILL.md`
+     має завершитися з **кодом 1** і порожнім виводом. Код 0 з виводом
+     `.gitignore:<N>:<шаблон>` = FAIL: шаблон без `/` на початку (типово
+     застарілий `build-*/`) зачіпає `.claude/`. `--no-index` обов'язковий:
+     без нього `git check-ignore` пропускає відстежувані файли і проблему не
+     видно. Ненульовий код виходу тут — очікуваний результат, а не помилка
+     команди;
+   - загальна перевірка для всіх файлів агента:
+     `git ls-files -c -i --exclude-standard -- .claude` — порожньо (жоден
+     відстежуваний файл у `.claude/` не збігається з правилами `.gitignore`).
 
 9. **Проєкт не змінено:** `git status --porcelain` після перевірок (S1)
    збігається з S0.
@@ -111,12 +124,15 @@ ctest --test-dir build -C Release --output-on-failure
 ./build/hello
 ruby -ryaml -e 'YAML.load_file(".github/workflows/ci.yml"); puts "YAML OK"'
 git check-ignore -v build/
+git check-ignore -v --no-index .claude/skills/build-and-test/SKILL.md
 git status --porcelain
 ```
 
-Очікується: усі команди з кодом 0, `100% tests passed`, `Hello, World!`,
-`YAML OK`, `git check-ignore -v` показує правило `.gitignore` для `build/`,
-`git status --porcelain` збігається з S0.
+Очікується: `100% tests passed`, `Hello, World!`, `YAML OK`,
+`git check-ignore -v build/` показує правило `.gitignore` для `build/`,
+`git check-ignore -v --no-index .claude/skills/build-and-test/SKILL.md`
+нічого не виводить і завершується з кодом 1, `git status --porcelain`
+збігається з S0. Усі інші команди завершуються з кодом 0.
 
 ## Ідемпотентність
 
@@ -128,13 +144,17 @@ git status --porcelain
 Для кожної проваленої перевірки:
 `check: FAIL [<№>. <назва>] — <що очікувалось> / <що отримано>. Виправлення: <команда, напр. /create-build>`.
 
+Приклад для файлів агента:
+`check: FAIL [8. Git-гігієна] — .claude/ не ігнорується / .gitignore:3:build-*/ .claude/skills/build-and-test/SKILL.md. Виправлення: /git-init (міграція build-*/ → /build-*/)`.
+
 ## Формат звіту
 
 ```
 | № | Перевірка            | Результат | Доказ |
 |---|----------------------|-----------|-------|
-| 1 | Структура            | PASS      | 23/23 файлів |
+| 1 | Структура            | PASS      | 22/22 файлів |
 | … | …                    | …         | … |
+| 8 | Git-гігієна          | PASS      | build/, dist/ ignored; .claude/ not ignored |
 | 9 | Проєкт не змінено    | PASS      | git status без змін |
 
 CHECK: PASS          (або: CHECK: FAIL — N перевірок не пройдено: <список №>)
