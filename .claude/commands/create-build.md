@@ -39,13 +39,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Skill, Bash(mkdir*), Bash(ls*), Ba
 
 ## Команди перевірки
 
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-ctest --test-dir build -C Release --output-on-failure
-./build/hello                       # Hello, World!
-git ls-files build dist | wc -l     # 0
-```
+Кожна команда — окремий виклик Bash; очікуваний результат після стрілки.
+
+1. `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release` → код виходу 0.
+2. `cmake --build build --config Release` → код виходу 0.
+3. `ctest --test-dir build -C Release --output-on-failure` → `100% tests passed`, `MathTest.BasicAddition` пройдено.
+4. `./build/hello` → `Hello, World!`.
+5. `git ls-files build dist` → порожній вивід (замість `| wc -l`).
 
 ## Ідемпотентність
 

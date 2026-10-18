@@ -36,12 +36,14 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Skill, Bash(mkdir*), Bash(ls*), Ba
 
 ## Команди перевірки
 
-```bash
-test -f src/main.cpp && echo OK
-mkdir -p build/scaffold && c++ -std=c++17 src/main.cpp -o build/scaffold/hello && ./build/scaffold/hello   # Hello, World!
-grep -c 'project:start' README.md     # 1
-git status --short
-```
+Кожна команда — окремий виклик Bash; очікуваний результат після стрілки.
+
+1. `test -f src/main.cpp` → код виходу 0.
+2. `mkdir -p build/scaffold` → код виходу 0.
+3. `c++ -std=c++17 src/main.cpp -o build/scaffold/hello` → код виходу 0.
+4. `./build/scaffold/hello` → `Hello, World!`.
+5. `grep -c 'project:start' README.md` → `1`.
+6. `git status --short` → лише очікувані зміни (або порожньо після коміту).
 
 ## Ідемпотентність
 

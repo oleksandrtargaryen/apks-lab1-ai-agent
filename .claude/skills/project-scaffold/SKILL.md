@@ -135,14 +135,15 @@ ci.bat             # Windows (cmd)
 
 ## Перевірка результату
 
-```bash
-test -f src/main.cpp && echo "main.cpp: OK"
-mkdir -p build/scaffold
-c++ -std=c++17 src/main.cpp -o build/scaffold/hello && ./build/scaffold/hello
-# очікується рядок: Hello, World!
-grep -c '^build/$' .gitignore      # очікується 1
-grep -c 'project:start' README.md  # очікується 1
-```
+Кожна команда — окремий виклик Bash (без `&&`, `;`, `|` і коментарів `#`);
+очікуваний результат указано після команди.
+
+1. `test -f src/main.cpp` → код виходу 0.
+2. `mkdir -p build/scaffold` → код виходу 0.
+3. `c++ -std=c++17 src/main.cpp -o build/scaffold/hello` → код виходу 0, без помилок.
+4. `./build/scaffold/hello` → рівно `Hello, World!`.
+5. `grep -c '^build/$' .gitignore` → `1`.
+6. `grep -c 'project:start' README.md` → `1`.
 
 Перевірка вважається успішною, якщо програма компілюється, друкує рівно
 `Hello, World!`, а маркери та рядки `.gitignore` не задубльовані.
@@ -159,7 +160,7 @@ grep -c 'project:start' README.md  # очікується 1
 create-project: OK
 Створено: src/main.cpp, .gitattributes
 Оновлено: README.md (секція проєкту), .gitignore (+0 рядків)
-Перевірки: c++ src/main.cpp && ./build/scaffold/hello -> Hello, World!
+Перевірки: c++ -std=c++17 src/main.cpp -> OK; ./build/scaffold/hello -> Hello, World!
 ```
 
 Повторний запуск: `Створено: —`, `Без змін: src/main.cpp, .gitattributes, README.md, .gitignore`.

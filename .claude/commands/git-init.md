@@ -11,8 +11,15 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash(git rev-parse*), Bash(git ini
 
 ## Передумови
 
-- Встановлено `git` (`git --version`).
+- Встановлено `git`.
 - Поточний каталог — корінь проєкту (або порожній каталог для нового репозиторію).
+
+Перевір передумови лише командами з `allowed-tools`, окремим викликом Bash
+(без `&&`, `;`, `|`): `git rev-parse --show-toplevel`. Вивід шляху — git є і
+каталог у репозиторії; `fatal: not a git repository` — git є, репозиторій
+треба створити (крок 1); `command not found` — `git-init: FAIL — git не
+встановлено або недоступний.` Не використовуй `git --version`: його немає в
+`allowed-tools`, і headless-запуск його відхиляє.
 
 ## Дії
 
@@ -26,8 +33,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash(git rev-parse*), Bash(git ini
    - файлу немає → створи його з повним списком;
    - файл є → для кожного рядка списку перевір `grep -qxF '<рядок>' .gitignore`
      і допиши лише відсутні рядки. Існуючі рядки не змінюй і не видаляй.
-4. Перевір, що тимчасові каталоги і секрети ігноруються:
-   `git check-ignore -q build/ && git check-ignore -q dist/ && git check-ignore -q .env`.
+4. Перевір, що тимчасові каталоги і секрети ігноруються — три окремі виклики,
+   кожен має завершитися з кодом 0:
+   `git check-ignore -q build/`, `git check-ignore -q dist/`, `git check-ignore -q .env`.
 5. Перевір, що в індексі немає артефактів: `git ls-files build dist .cache`
    повинно повернути порожній результат.
 6. Якщо `.gitignore` змінився (`git status --porcelain .gitignore` не порожній) —
@@ -41,14 +49,14 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash(git rev-parse*), Bash(git ini
 
 ## Команди перевірки
 
-```bash
-git rev-parse --is-inside-work-tree                 # true
-git check-ignore -q build/ && echo "build/ ignored"
-git check-ignore -q dist/  && echo "dist/ ignored"
-git ls-files build dist | wc -l                     # 0
-grep -c -xF 'build/' .gitignore                     # 1
-git status --short --branch
-```
+Кожна команда — окремий виклик Bash; очікуваний результат після стрілки.
+
+1. `git rev-parse --is-inside-work-tree` → `true`.
+2. `git check-ignore -q build/` → код виходу 0.
+3. `git check-ignore -q dist/` → код виходу 0.
+4. `git ls-files build dist` → порожній вивід.
+5. `grep -c -xF 'build/' .gitignore` → `1`.
+6. `git status --short --branch` → поточна гілка, без неочікуваних змін.
 
 ## Ідемпотентність
 

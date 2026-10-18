@@ -22,9 +22,20 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Skill, Bash(git rev-parse*), Bash(
 - Встановлено `git`, `cmake` ≥ 3.16, компілятор C++, парсер YAML (Ruby або PyYAML).
 - Є доступ до мережі (FetchContent завантажує GoogleTest).
 
-Перевір передумови до першого кроку (`git --version`, `cmake --version`,
-`c++ --version`, `ls .claude/commands`). Якщо чогось бракує — одразу
-звіт `LAB-INIT: FAIL (передумови)` без жодних змін.
+Перевір передумови до першого кроку **лише командами з `allowed-tools`**,
+кожною окремим викликом Bash (без `&&`, `;`, `|`, перенаправлень і коментарів `#`):
+
+1. `git rev-parse --show-toplevel` — git встановлено, каталог у репозиторії;
+2. `cmake --version`;
+3. `c++ --version`;
+4. `ruby -ryaml -e 'puts RUBY_VERSION'` — Ruby з парсером YAML
+   (якщо недоступний — `python3 -c 'import yaml'`);
+5. `ls .claude/commands`.
+
+Не використовуй `git --version`, `ruby -v` та складені команди: у
+headless-запуску з `--allowedTools` вони відхиляються
+(«This command requires approval», «contains multiple operations»).
+Якщо чогось бракує — одразу звіт `LAB-INIT: FAIL (передумови)` без жодних змін.
 
 ## Порядок кроків
 
@@ -63,12 +74,12 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Skill, Bash(git rev-parse*), Bash(
 
 ## Команди перевірки
 
-```bash
-git log --oneline -5
-git status --short           # порожньо після успішного запуску
-ctest --test-dir build -C Release --output-on-failure
-./build/hello                # Hello, World!
-```
+Кожна команда — окремий виклик Bash; очікуваний результат після стрілки.
+
+1. `git log --oneline -5` → коміти кроків 1–4 (якщо були зміни).
+2. `git status --short` → порожньо після успішного запуску.
+3. `ctest --test-dir build -C Release --output-on-failure` → `100% tests passed`.
+4. `./build/hello` → `Hello, World!`.
 
 ## Ідемпотентність
 
