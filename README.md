@@ -72,3 +72,24 @@ claude --agent build-engineer -p "/lab-init" --permission-mode acceptEdits
 Окремі операції: `/git-init`, `/create-project`, `/create-build`,
 `/create-actions`, `/check`. Детально — у [docs/usage.md](docs/usage.md),
 архітектура — у [docs/architecture.md](docs/architecture.md).
+
+<!-- project:start -->
+## Проєкт Hello World (C++17 / CMake / GoogleTest)
+
+| Шлях | Призначення |
+|------|-------------|
+| `src/main.cpp` | програма `hello`, друкує `Hello, World!` |
+| `src/math.hpp`, `src/math.cpp` | функція `int add(int, int)` |
+| `tests/test_math.cpp` | юніт-тест `MathTest.BasicAddition` |
+| `CMakeLists.txt` | складання, FetchContent GoogleTest, CTest |
+| `ci.sh` / `ci.bat` | скрипти збірки для Linux/macOS та Windows |
+| `.github/workflows/ci.yml` | GitHub Actions: ubuntu / windows / macos |
+
+Складання і запуск:
+
+```bash
+./ci.sh            # Linux / macOS
+ci.bat             # Windows (cmd)
+./dist/hello       # -> Hello, World!
+```
+<!-- project:end -->

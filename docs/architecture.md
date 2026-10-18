@@ -159,3 +159,8 @@ flowchart TD
   користувач (`git push`, `gh run watch`).
 - Перевірка YAML локально — синтаксична (Ruby Psych / PyYAML), а не повна
   валідація схеми GitHub Actions.
+- Каталог `.claude/` у Claude Code захищений: у headless-режимі
+  (`-p --permission-mode acceptEdits`) агент не може змінити власні
+  інструкції без підтвердження людини. Виправлення агента вносяться
+  інтерактивно (з підтвердженням) або через staging-каталог (див.
+  [ai-log.md](ai-log.md), помилка 3).
