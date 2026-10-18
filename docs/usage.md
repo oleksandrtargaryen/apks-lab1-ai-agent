@@ -8,8 +8,14 @@
 | Git | `git --version` | |
 | CMake ≥ 3.16 | `cmake --version` | |
 | Компілятор C++17 | `c++ --version` | clang / gcc / MSVC |
-| Парсер YAML | `ruby -ryaml -e 'puts 1'` або `python3 -c 'import yaml'` | для `/check` |
+| Парсер YAML | `ruby -ryaml -e 'puts RUBY_VERSION'` або `python3 -c 'import yaml'` | для `/check` |
 | Мережа | — | FetchContent завантажує GoogleTest `v1.15.2` |
+
+Агент (`/lab-init`, `/git-init`) перевіряє передумови сам лише командами з
+`--allowedTools`, кожною окремим викликом: `git rev-parse --show-toplevel`,
+`cmake --version`, `c++ --version`, `ruby -ryaml -e 'puts RUBY_VERSION'`,
+`ls .claude/commands`. `git --version`, `ruby -v` і складені команди
+(`&&`, `;`, `|`) у headless-режимі відхиляються.
 
 ## 2. Запуск агента
 

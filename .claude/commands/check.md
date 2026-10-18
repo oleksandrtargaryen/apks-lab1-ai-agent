@@ -22,7 +22,8 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
 ## Дії
 
 Виконай **усі** перевірки (не зупиняйся на першій помилці), для кожної
-запиши `PASS` або `FAIL` з доказом (вивід команди).
+запиши `PASS` або `FAIL` з доказом (вивід команди). Кожну shell-команду
+виконуй окремим викликом Bash (без `&&`, `||`, `;`, `|` і коментарів `#`).
 
 0. **Знімок стану:** збережи вивід `git status --porcelain` (S0).
 
@@ -59,7 +60,7 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
      `enable_testing()`, `gtest_discover_tests`, `add_executable(hello`.
    - `ci.sh` і `ci.bat` містять `cmake`, `ctest` і копіювання в `dist`.
 
-6. **Складання і тести.**
+6. **Складання і тести** (кожна команда — окремий виклик Bash).
    ```bash
    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
    cmake --build build --config Release
@@ -73,17 +74,23 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
 7. **Workflow** (`.github/workflows/ci.yml`):
    - валідний YAML: `ruby -ryaml -e 'YAML.load_file(".github/workflows/ci.yml")'`
      (або `python3 -c 'import yaml; yaml.safe_load(open(".github/workflows/ci.yml"))'`);
-   - тригери `push` і `pull_request` на `develop` і `master`;
+   - тригери `push` і `pull_request` на `develop` і `master`. Ruby 2.6 / PyYAML
+     (YAML 1.1) читають ключ `on:` як булеве `true`, тому `y["on"]` дає `nil` —
+     читай тригери через `t = y["on"] || y[true]`:
+     `ruby -ryaml -e 'y=YAML.load_file(".github/workflows/ci.yml"); t=y["on"] || y[true]; puts "triggers=#{t.keys.sort.join(",")}"; puts "push=#{t["push"]["branches"].join(",")}"; puts "pull_request=#{t["pull_request"]["branches"].join(",")}"'`
+     (очікується `triggers=pull_request,push`, `push=develop,master`,
+     `pull_request=develop,master`);
    - рівно одна job; matrix містить `ubuntu-latest`, `windows-latest`, `macos-latest`;
    - викликає `ci.sh` і `ci.bat`;
    - **немає логіки збірки**: `grep -En '\b(cmake|ctest|make|g\+\+|clang|cl\.exe)\b' .github/workflows/ci.yml` нічого не знаходить;
    - є `actions/upload-artifact` з `path: dist/`;
    - немає секретів: `grep -n 'secrets\.' .github/workflows/ci.yml` нічого не знаходить.
 
-8. **Git-гігієна.**
+8. **Git-гігієна** (кожна команда — окремий виклик).
    - `git check-ignore -q build/` і `git check-ignore -q dist/` — успішні;
    - `git ls-files build dist .cache` — порожньо;
-   - `git ls-files | grep -E '(^|/)\.env|\.pem$|\.key$'` — порожньо.
+   - `git ls-files -- '.env*' '*/.env*' '*.pem' '*.key'` — порожньо
+     (pathspec замість `git ls-files | grep`).
 
 9. **Проєкт не змінено:** `git status --porcelain` після перевірок (S1)
    збігається з S0.
@@ -94,16 +101,22 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
 
 ## Команди перевірки
 
-Див. «Дії» (кроки 1–9). Мінімальний ручний набір:
+Див. «Дії» (кроки 1–9). Мінімальний ручний набір — кожен рядок окремим
+викликом Bash:
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
 ./build/hello
 ruby -ryaml -e 'YAML.load_file(".github/workflows/ci.yml"); puts "YAML OK"'
-git check-ignore -q build/ && echo "build/ ignored"
+git check-ignore -v build/
 git status --porcelain
 ```
+
+Очікується: усі команди з кодом 0, `100% tests passed`, `Hello, World!`,
+`YAML OK`, `git check-ignore -v` показує правило `.gitignore` для `build/`,
+`git status --porcelain` збігається з S0.
 
 ## Ідемпотентність
 

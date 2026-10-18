@@ -98,26 +98,36 @@ jobs:
 
 ## Перевірка результату
 
-```bash
-# 1. Валідний YAML (будь-який доступний парсер)
-ruby -ryaml -e 'YAML.load_file(".github/workflows/ci.yml"); puts "YAML OK"'
-# або: python3 -c 'import yaml,sys; yaml.safe_load(open(".github/workflows/ci.yml")); print("YAML OK")'
+Кожна команда — окремий виклик Bash (без `&&`, `||`, `;`, `|` поза лапками
+і без коментарів `#`); очікуваний результат указано після команди.
 
-# 2. Усі три ОС у matrix
-grep -E 'ubuntu-latest' .github/workflows/ci.yml && grep -E 'windows-latest' .github/workflows/ci.yml && grep -E 'macos-latest' .github/workflows/ci.yml
+1. Валідний YAML (будь-який доступний парсер):
+   `ruby -ryaml -e 'YAML.load_file(".github/workflows/ci.yml"); puts "YAML OK"'`
+   → `YAML OK`. Якщо Ruby недоступний:
+   `python3 -c 'import yaml; yaml.safe_load(open(".github/workflows/ci.yml")); print("YAML OK")'`.
+2. Усі три ОС у matrix — три окремі виклики, кожен знаходить рядок:
+   `grep -E 'ubuntu-latest' .github/workflows/ci.yml`,
+   `grep -E 'windows-latest' .github/workflows/ci.yml`,
+   `grep -E 'macos-latest' .github/workflows/ci.yml`.
+3. Немає логіки збірки:
+   `grep -En '\b(cmake|ctest|make|g\+\+|clang|cl\.exe)\b' .github/workflows/ci.yml`
+   → порожній вивід і код виходу 1 (0 збігів) = OK; будь-який збіг = FAIL.
+4. Викликаються саме скрипти — два окремі виклики, кожен знаходить рядок:
+   `grep -E 'ci\.sh' .github/workflows/ci.yml`,
+   `grep -E 'ci\.bat' .github/workflows/ci.yml`.
+5. Одна job:
+   `ruby -ryaml -e 'y=YAML.load_file(".github/workflows/ci.yml"); puts "jobs=#{y["jobs"].size}"'`
+   → `jobs=1`.
+6. Тригери `push` і `pull_request` на `develop` і `master`:
+   `ruby -ryaml -e 'y=YAML.load_file(".github/workflows/ci.yml"); t=y["on"] || y[true]; puts "triggers=#{t.keys.sort.join(",")}"; puts "push=#{t["push"]["branches"].join(",")}"; puts "pull_request=#{t["pull_request"]["branches"].join(",")}"'`
+   → `triggers=pull_request,push`, `push=develop,master`, `pull_request=develop,master`.
 
-# 3. Немає логіки збірки (очікується 0 збігів)
-grep -En '\b(cmake|ctest|make|g\+\+|clang|cl\.exe)\b' .github/workflows/ci.yml || echo "no build logic: OK"
-
-# 4. Викликаються саме скрипти
-grep -E 'ci\.sh' .github/workflows/ci.yml && grep -E 'ci\.bat' .github/workflows/ci.yml
-
-# 5. Одна job
-ruby -ryaml -e 'y=YAML.load_file(".github/workflows/ci.yml"); puts "jobs=#{y["jobs"].size}"'   # jobs=1
-```
-
-Примітка: YAML-парсер Ruby (Psych) читає ключ `on` як рядок `"on"`, а
-PyYAML — як булеве `True`; для перевірки валідності це не має значення.
+Примітка: за правилами YAML 1.1 ключ `on` — булеве значення. Системний
+Ruby 2.6 (Psych, YAML 1.1) і PyYAML читають `on:` як `true`/`True`, тому
+`y["on"]` повертає `nil` (помилка `undefined method 'keys' for nil:NilClass`).
+Деякі інші парсери повертають рядок `"on"`. Тригери завжди читай через
+`t = y["on"] || y[true]` (у Python: `y.get("on", y.get(True))`) — це працює
+з обома варіантами. Для перевірки лише валідності YAML різниця не має значення.
 
 ## Приклад входу
 
@@ -130,7 +140,7 @@ PyYAML — як булеве `True`; для перевірки валіднос�
 ```
 create-actions: OK
 Створено: .github/workflows/ci.yml
-Перевірки: YAML OK; matrix: ubuntu-latest, windows-latest, macos-latest; build logic in yml: none; jobs=1
+Перевірки: YAML OK; matrix: ubuntu-latest, windows-latest, macos-latest; build logic in yml: none; jobs=1; triggers: push, pull_request -> develop, master
 ```
 
 Після push у `develop`/`master` або PR до них GitHub запускає 3 паралельні
@@ -146,3 +156,4 @@ create-actions: OK
 | На runner `ci.sh: Permission denied` | лог Actions | Використовувати `bash ./ci.sh` (уже в шаблоні). |
 | Артефакт порожній | `No files were found with the provided path: dist/` | Перевірити крок Package у скрипті збірки; не вимикати `if-no-files-found: error`. |
 | Немає парсера YAML локально | `cannot load such file -- yaml` і `No module named yaml` | Повідомити користувачу; не встановлювати пакети самостійно. |
+| Перевірка тригерів падає на `y["on"]` | `undefined method 'keys' for nil:NilClass` | Парсер YAML 1.1 прочитав `on` як `true`; використати `t = y["on"] \|\| y[true]` (перевірка №6). `ci.yml` не змінювати. |
