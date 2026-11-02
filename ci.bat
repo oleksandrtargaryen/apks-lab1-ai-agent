@@ -14,7 +14,9 @@ ctest --test-dir build -C Release --output-on-failure || exit /b 1
 
 echo ==^> Package
 if not exist dist mkdir dist
-copy /Y build\Release\hello.exe dist\hello.exe || exit /b 1
+set "BIN=build\Release\hello.exe"
+if exist build\hello.exe set "BIN=build\hello.exe"
+copy /Y "%BIN%" dist\hello.exe || exit /b 1
 
 echo ==^> Run
 dist\hello.exe || exit /b 1

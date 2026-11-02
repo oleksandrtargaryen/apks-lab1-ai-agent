@@ -29,7 +29,7 @@
 
 ```
 .claude/
-├── agents/build-engineer.md          # manifest агента
+├── agents/build-engineer.agent.md          # manifest агента
 ├── skills/
 │   ├── project-scaffold/SKILL.md     # створення проєкту
 │   ├── build-and-test/SKILL.md       # CMake + GoogleTest/CTest + ci.sh/ci.bat

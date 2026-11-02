@@ -51,7 +51,7 @@ claude --agent build-engineer
 ```
 
 Без `--agent build-engineer` команди теж працюють: кожна першим кроком
-читає manifest `.claude/agents/build-engineer.md`.
+читає manifest `.claude/agents/build-engineer.agent.md`.
 
 ### 2.3. Headless-режим (точна команда, якою згенеровано гілку feature)
 

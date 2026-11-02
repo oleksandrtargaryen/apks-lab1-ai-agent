@@ -6,7 +6,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Skill, Bash(mkdir*), Bash(ls*), Ba
 
 # /create-actions — GitHub Actions workflow
 
-Дій як агент `build-engineer` (`.claude/agents/build-engineer.md`).
+Дій як агент `build-engineer` (`.claude/agents/build-engineer.agent.md`).
 Аргументи: `$ARGUMENTS` (якщо порожньо — значення за замовчуванням зі skill).
 
 ## Передумови

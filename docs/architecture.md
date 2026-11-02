@@ -22,7 +22,7 @@ matrix. Агент `build-engineer` вирішує ці проблеми:
 
 ### Manifest
 
-`.claude/agents/build-engineer.md` — subagent Claude Code. Frontmatter
+`.claude/agents/build-engineer.agent.md` — subagent Claude Code. Frontmatter
 (`name`, `description`, `tools`, `skills`) задає назву, призначення, доступні
 інструменти й попередньо завантажені skills; тіло — роль, область
 відповідальності, правила роботи з файлами, заборонені дії, workflow, перелік
@@ -56,7 +56,7 @@ skills/commands, критерії завершення та формат зві�
 ```mermaid
 flowchart TD
     U[Користувач] -->|"claude --agent build-engineer<br/>/lab-init"| O
-    M[["Manifest<br/>.claude/agents/build-engineer.md<br/>роль, заборони, критерії"]] -.->|правила| O
+    M[["Manifest<br/>.claude/agents/build-engineer.agent.md<br/>роль, заборони, критерії"]] -.->|правила| O
     O{{"Orchestrator /lab-init"}}
     O -->|1| C1["command /git-init"]
     C1 -->|"OK: .gitignore, гілка"| C2["command /create-project"]
@@ -120,7 +120,7 @@ flowchart TD
 
 | Методичка (Copilot) | Claude Code (цей репозиторій) | Роль |
 |---------------------|-------------------------------|------|
-| `.github/agents/build-engineer.agent.md` | `.claude/agents/build-engineer.md` | manifest агента (subagent з frontmatter `name`, `description`, `tools`, `skills`) |
+| `.github/agents/build-engineer.agent.md` | `.claude/agents/build-engineer.agent.md` | manifest агента (subagent з frontmatter `name`, `description`, `tools`, `skills`) |
 | `.github/skills/project-scaffold/SKILL.md` | `.claude/skills/project-scaffold/SKILL.md` | skill створення проєкту |
 | `.github/skills/build-and-test/SKILL.md` | `.claude/skills/build-and-test/SKILL.md` | skill складання і тестування |
 | `.github/skills/github-actions/SKILL.md` | `.claude/skills/github-actions/SKILL.md` | skill GitHub Actions |
@@ -132,6 +132,8 @@ flowchart TD
 | `.github/prompts/init.prompt.md` | `.claude/commands/lab-init.md` → `/lab-init` | orchestrator |
 | `.github/workflows/ci.yml` | `.github/workflows/ci.yml` | CI (без змін — це формат GitHub, не AI-клієнта) |
 | `src/`, `tests/`, `docs/`, `CMakeLists.txt`, `README.md`, `.gitignore` | ті самі шляхи | проєкт |
+
+Файл manifest названо `build-engineer.agent.md`, як у методичці. Claude Code підхоплює будь-який `*.md` у `.claude/agents/`, а ім'я агента бере з поля `name:` у frontmatter, тому запуск лишається `claude --agent build-engineer`.
 
 Особливості адаптації:
 
