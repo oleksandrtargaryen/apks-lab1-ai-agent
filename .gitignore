@@ -1,0 +1,28 @@
+# Build outputs
+build/
+/build-*/
+/cmake-build-*/
+/out/
+dist/
+/Testing/
+CMakeUserPresets.json
+
+# Caches
+.cache/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Claude Code local settings
+.claude/settings.local.json

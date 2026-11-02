@@ -10,7 +10,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Skill, Bash(git rev-parse*), Bash(
 > (генерує `CLAUDE.md`), тому оркестратор перейменовано, щоб не
 > конфліктувати з нею. Функція відповідає `init.prompt.md` з методички.
 
-Дій як агент `build-engineer`: прочитай `.claude/agents/build-engineer.md`
+Дій як агент `build-engineer`: прочитай `.claude/agents/build-engineer.agent.md`
 (якщо сесія вже запущена з `--agent build-engineer`, manifest уже активний)
 і дотримуйся його правил, заборон і критеріїв завершення.
 Аргументи: `$ARGUMENTS` — передаються відповідним крокам.

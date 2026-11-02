@@ -6,7 +6,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash(git rev-parse*), Bash(git ini
 
 # /git-init — підготовка Git-репозиторію
 
-Дій як агент `build-engineer` (`.claude/agents/build-engineer.md`): дотримуйся
+Дій як агент `build-engineer` (`.claude/agents/build-engineer.agent.md`): дотримуйся
 його правил роботи з файлами та заборонених дій.
 
 ## Передумови

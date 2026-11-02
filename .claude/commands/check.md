@@ -6,7 +6,7 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
 
 # /check — перевірка без змін у проєкті
 
-Дій як агент `build-engineer` (`.claude/agents/build-engineer.md`).
+Дій як агент `build-engineer` (`.claude/agents/build-engineer.agent.md`).
 
 **Ця команда нічого не змінює.** Заборонено використовувати Write/Edit,
 `git add`, `git commit`, `chmod`, `rm`, а також виправляти знайдені
@@ -27,7 +27,7 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
 
 0. **Знімок стану:** збережи вивід `git status --porcelain` (S0).
 
-1. **Структура.** Існують: `.claude/agents/build-engineer.md`,
+1. **Структура.** Існують: `.claude/agents/build-engineer.agent.md`,
    `.claude/skills/{project-scaffold,build-and-test,github-actions}/SKILL.md`,
    `.claude/commands/{git-init,create-project,create-build,create-actions,check,lab-init}.md`,
    `src/main.cpp`, `src/math.hpp`, `src/math.cpp`, `tests/test_math.cpp`,
@@ -35,7 +35,7 @@ allowed-tools: Read, Glob, Grep, Bash(test*), Bash(ls*), Bash(grep*), Bash(cat*)
    `.gitignore`, `README.md`, `docs/architecture.md`, `docs/usage.md`.
    `ci.sh` має біт виконання (`test -x ci.sh`).
 
-2. **Manifest агента** (`.claude/agents/build-engineer.md`): frontmatter з
+2. **Manifest агента** (`.claude/agents/build-engineer.agent.md`): frontmatter з
    `name: build-engineer`, `description:`, `tools:`; розділи
    `## 1. Роль`, `## 4. Заборонені дії`, `## 7. Критерії успішного завершення`.
 
